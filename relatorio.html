@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Relatório de Vendas</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Relatório de Vendas (últimos 30 dias)</h1>
+  <div>
+    <label for="colaboradorFiltro">Filtrar por colaborador:</label>
+    <select id="colaboradorFiltro">
+      <option value="">Todos</option>
+      <option>Daniel</option>
+      <option>Juan</option>
+      <option>Mateus Felipe</option>
+      <option>Fabio Felipe</option>
+      <option>Elder</option>
+      <option>Luan</option>
+    </select>
+    <label for="produtoFiltro">Filtrar por produto:</label>
+    <select id="produtoFiltro">
+      <option value="">Todos</option>
+      <option>Oferta Principal Ticket 97</option>
+      <option>Oferta Principal Ticket 67</option>
+      <option>Oferta Principal Ticket 47</option>
+      <option>LTV 1 = Atualizaçao Cadastral Ticket 47</option>
+      <option>LTV 2 = Blindagem Ticket 53</option>
+    </select>
+    <button onclick="filtrarVendas()">Filtrar</button>
+  </div>
+  <br>
+  <div id="calendario"></div>
+  <br>
+  <table border="1" id="tabelaVendas">
+    <thead>
+      <tr>
+        <th>Data</th>
+        <th>Colaborador</th>
+        <th>Produto</th>
+        <th>Valor (R$)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Dados preenchidos via JS -->
+    </tbody>
+  </table>
+  <br>
+  <a href="index.html">Voltar ao Cadastro</a>
+  <script src="script.js"></script>
+</body>
+</html> 

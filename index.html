@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cadastro de Vendas</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Cadastro de Vendas</h1>
+  <form id="vendaForm">
+    <label for="colaborador">Colaborador:</label>
+    <select id="colaborador" name="colaborador" required>
+      <option value="">Selecione</option>
+      <option>Daniel</option>
+      <option>Juan</option>
+      <option>Mateus Felipe</option>
+      <option>Fabio Felipe</option>
+      <option>Elder</option>
+      <option>Luan</option>
+    </select>
+    <br><br>
+    <label for="produto">Produto:</label>
+    <select id="produto" name="produto" required>
+      <option value="">Selecione</option>
+      <option value="Oferta Principal Ticket 97">Oferta Principal Ticket 97</option>
+      <option value="Oferta Principal Ticket 67">Oferta Principal Ticket 67</option>
+      <option value="Oferta Principal Ticket 47">Oferta Principal Ticket 47</option>
+      <option value="LTV 1 = Atualizaçao Cadastral Ticket 47">LTV 1 = Atualizaçao Cadastral Ticket 47</option>
+      <option value="LTV 2 = Blindagem Ticket 53">LTV 2 = Blindagem Ticket 53</option>
+    </select>
+    <br><br>
+    <label for="valor">Valor (R$):</label>
+    <input type="number" id="valor" name="valor" required readonly>
+    <br><br>
+    <label for="data">Data:</label>
+    <input type="date" id="data" name="data" required>
+    <br><br>
+    <button type="submit">Enviar</button>
+  </form>
+  <br>
+  <a href="relatorio.html">Ver Relatório</a>
+  <script src="script.js"></script>
+</body>
+</html>
