@@ -57,6 +57,57 @@ if (document.getElementById('vendaForm')) {
 if (document.getElementById('tabelaVendas')) {
   let vendas = [];
   let vendasFiltradas = [];
+  let vendasDoDia = [];
+
+  function calcularRanking(vendasArray) {
+    const ranking = {};
+    vendasArray.forEach(v => {
+      if (!ranking[v.colaborador]) ranking[v.colaborador] = 0;
+      ranking[v.colaborador]++;
+    });
+    // Ordena por mais vendas
+    return Object.entries(ranking)
+      .sort((a, b) => b[1] - a[1])
+      .map(([colaborador, total]) => ({ colaborador, total }));
+  }
+
+  function exibirRanking() {
+    const rankingDiv = document.getElementById('rankingVendas');
+    if (!rankingDiv) return;
+    // Ranking mensal
+    const rankingMes = calcularRanking(vendasFiltradas);
+    // Ranking do dia
+    const hoje = new Date();
+    const hojeStr = hoje.toISOString().slice(0, 10);
+    vendasDoDia = vendasFiltradas.filter(v => {
+      const dataVenda = new Date(v.data);
+      return dataVenda.toISOString().slice(0, 10) === hojeStr;
+    });
+    const rankingDia = calcularRanking(vendasDoDia);
+    let html = '<div class="ranking-bloco">';
+    html += '<h2>Ranking Mensal</h2>';
+    if (rankingMes.length === 0) {
+      html += '<div class="ranking-vazio">Nenhuma venda no mês.</div>';
+    } else {
+      html += '<ol class="ranking-lista">';
+      rankingMes.forEach(r => {
+        html += `<li><b>${r.colaborador}</b>: ${r.total} venda(s)</li>`;
+      });
+      html += '</ol>';
+    }
+    html += '<h2>Ranking do Dia</h2>';
+    if (rankingDia.length === 0) {
+      html += '<div class="ranking-vazio">Nenhuma venda hoje.</div>';
+    } else {
+      html += '<ol class="ranking-lista">';
+      rankingDia.forEach(r => {
+        html += `<li><b>${r.colaborador}</b>: ${r.total} venda(s)</li>`;
+      });
+      html += '</ol>';
+    }
+    html += '</div>';
+    rankingDiv.innerHTML = html;
+  }
 
   async function carregarVendas() {
     try {
@@ -88,6 +139,7 @@ if (document.getElementById('tabelaVendas')) {
     });
     atualizarTabela();
     atualizarCalendario(primeiroDiaMes, ultimoDiaMes);
+    exibirRanking();
   }
 
   function atualizarTabela() {

@@ -121,6 +121,40 @@ a:hover {
   color: #aaa;
   font-size: 0.9em;
 }
+.ranking-bloco {
+  background: #f8fafd;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px #0001;
+  margin: 0 auto 20px auto;
+  max-width: 500px;
+  padding: 16px 10px;
+  text-align: center;
+}
+.ranking-bloco h2 {
+  font-size: 1.15em;
+  margin: 10px 0 6px 0;
+  color: #2c3e50;
+}
+.ranking-lista {
+  list-style: decimal inside;
+  padding: 0;
+  margin: 0 0 10px 0;
+  text-align: left;
+  display: inline-block;
+}
+.ranking-lista li {
+  font-size: 1em;
+  margin: 2px 0;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: #eafaf1;
+  color: #222;
+}
+.ranking-vazio {
+  color: #aaa;
+  font-size: 0.98em;
+  margin-bottom: 8px;
+}
 @media (max-width: 900px) {
   form, .filtros, table, #calendario {
     max-width: 98vw;
@@ -158,6 +192,15 @@ a:hover {
   input, select, button {
     font-size: 0.95em;
     padding: 6px;
+  }
+  .ranking-bloco {
+    max-width: 98vw;
+    padding: 8px 2px;
+    font-size: 0.95em;
+  }
+  .ranking-lista li {
+    font-size: 0.95em;
+    padding: 2px 2px;
   }
 }
 @media (max-width: 500px) {
