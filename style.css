@@ -4,12 +4,27 @@ body {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
+
+main, .main-content {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 h1 {
   color: #2c3e50;
   text-align: center;
   margin-top: 30px;
 }
+
 form, .filtros, table, #calendario {
   max-width: 900px;
   margin: 20px auto;
@@ -18,10 +33,15 @@ form, .filtros, table, #calendario {
   border-radius: 8px;
   box-shadow: 0 2px 8px #0001;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
+
 label {
   font-weight: bold;
 }
+
 input, select, button {
   padding: 8px;
   margin: 5px 0 15px 0;
@@ -30,6 +50,7 @@ input, select, button {
   font-size: 1em;
   box-sizing: border-box;
 }
+
 button {
   background: #2ecc71;
   color: #fff;
@@ -37,62 +58,57 @@ button {
   cursor: pointer;
   transition: background 0.2s;
 }
+
 button:hover {
   background: #27ae60;
 }
+
 table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 20px;
   box-sizing: border-box;
+  text-align: center;
 }
+
 th, td {
   padding: 8px 6px;
-  text-align: left;
+  text-align: center;
   box-sizing: border-box;
 }
+
 th {
   background: #e1eaf7;
 }
+
 tr:nth-child(even) {
   background: #f2f6fa;
 }
+
 #calendario {
   width: 100%;
   overflow-x: auto;
   box-sizing: border-box;
+  display: flex;
+  justify-content: center;
 }
-#calendario table {
-  width: 100%;
-  table-layout: fixed;
-}
-#calendario td {
-  min-width: 90px;
-  font-size: 0.95em;
-  border: 1px solid #e1eaf7;
-}
-a {
-  display: inline-block;
-  margin: 20px auto;
-  text-align: center;
-  color: #2980b9;
-  text-decoration: none;
-  font-weight: bold;
-}
-a:hover {
-  text-decoration: underline;
-}
+
 .calendario-scroll {
   overflow-x: auto;
   width: 100%;
   box-sizing: border-box;
+  display: flex;
+  justify-content: center;
 }
+
 .calendario-scroll table {
   min-width: 600px;
   width: 100%;
   table-layout: fixed;
   box-sizing: border-box;
+  margin: 0 auto;
 }
+
 .calendario-dia {
   min-width: 90px;
   min-height: 80px;
@@ -104,11 +120,13 @@ a:hover {
   box-sizing: border-box;
   word-break: break-word;
 }
+
 .calendario-data {
   font-weight: bold;
   font-size: 1em;
   margin-bottom: 2px;
 }
+
 .calendario-venda {
   font-size: 0.92em;
   margin: 2px 0;
@@ -117,10 +135,25 @@ a:hover {
   padding: 2px 3px;
   word-break: break-word;
 }
+
 .calendario-sem {
   color: #aaa;
   font-size: 0.9em;
 }
+
+a {
+  display: inline-block;
+  margin: 20px auto;
+  text-align: center;
+  color: #2980b9;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
 .ranking-bloco {
   background: #f8fafd;
   border-radius: 8px;
@@ -129,6 +162,9 @@ a:hover {
   max-width: 500px;
   padding: 16px 10px;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 .ranking-bloco h2 {
   font-size: 1.15em;
@@ -139,8 +175,10 @@ a:hover {
   list-style: decimal inside;
   padding: 0;
   margin: 0 0 10px 0;
-  text-align: left;
-  display: inline-block;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 .ranking-lista li {
   font-size: 1em;
@@ -149,12 +187,16 @@ a:hover {
   border-radius: 4px;
   background: #eafaf1;
   color: #222;
+  width: 100%;
+  min-width: 120px;
+  text-align: center;
 }
 .ranking-vazio {
   color: #aaa;
   font-size: 0.98em;
   margin-bottom: 8px;
 }
+
 @media (max-width: 900px) {
   form, .filtros, table, #calendario {
     max-width: 98vw;
@@ -169,7 +211,18 @@ a:hover {
     font-size: 0.85em;
     padding: 2px;
   }
+  .ranking-bloco {
+    max-width: 98vw;
+    padding: 8px 2px;
+    font-size: 0.95em;
+  }
+  .ranking-lista li {
+    font-size: 0.95em;
+    padding: 2px 2px;
+    min-width: 90px;
+  }
 }
+
 @media (max-width: 700px) {
   form, .filtros, table, #calendario {
     max-width: 100vw;
@@ -194,15 +247,17 @@ a:hover {
     padding: 6px;
   }
   .ranking-bloco {
-    max-width: 98vw;
-    padding: 8px 2px;
-    font-size: 0.95em;
+    max-width: 99vw;
+    padding: 4px 1px;
+    font-size: 0.92em;
   }
   .ranking-lista li {
-    font-size: 0.95em;
-    padding: 2px 2px;
+    font-size: 0.9em;
+    min-width: 60px;
+    padding: 2px 1px;
   }
 }
+
 @media (max-width: 500px) {
   .calendario-scroll table {
     min-width: 250px;
@@ -216,5 +271,15 @@ a:hover {
   th, td {
     font-size: 0.8em;
     padding: 2px 1px;
+  }
+  .ranking-bloco {
+    max-width: 100vw;
+    padding: 2px 0;
+    font-size: 0.9em;
+  }
+  .ranking-lista li {
+    font-size: 0.8em;
+    min-width: 40px;
+    padding: 1px 0;
   }
 } 
