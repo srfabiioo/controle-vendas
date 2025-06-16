@@ -19,32 +19,44 @@ if (document.getElementById('vendaForm')) {
   document.getElementById('vendaForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     const submitBtn = this.querySelector('button[type="submit"]');
-    const dados = {
-      colaborador: document.getElementById('colaborador').value,
-      produto: document.getElementById('produto').value,
-      valor: document.getElementById('valor').value,
-      data: document.getElementById('data').value
-    };
+    const quantidade = parseInt(document.getElementById('quantidade').value);
+    
     // Pop-up de confirmação
-    const msg = `Confirma o cadastro da venda?\n\nColaborador: ${dados.colaborador}\nProduto: ${dados.produto}\nValor: R$${dados.valor}\nData: ${dados.data}`;
+    const msg = `Confirma o cadastro?\n\nData: ${document.getElementById('data').value}\nColaborador: ${document.getElementById('colaborador').value}\nProduto: ${document.getElementById('produto').value}\nQuantidade: ${quantidade}`;
     if (!confirm(msg)) {
       return;
     }
+
     // Evitar duplo clique
     submitBtn.disabled = true;
     try {
-      const formBody = new URLSearchParams(dados).toString();
-      const resp = await fetch(GOOGLE_SCRIPT_URL, {
-        method: 'POST',
-        body: formBody,
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-      });
-      const result = await resp.json();
-      if (result.result === 'success') {
-        alert('Venda cadastrada com sucesso!');
+      let successCount = 0;
+      for (let i = 0; i < quantidade; i++) {
+        const dados = {
+          colaborador: document.getElementById('colaborador').value,
+          produto: document.getElementById('produto').value,
+          valor: document.getElementById('valor').value,
+          data: document.getElementById('data').value
+        };
+        
+        const formBody = new URLSearchParams(dados).toString();
+        const resp = await fetch(GOOGLE_SCRIPT_URL, {
+          method: 'POST',
+          body: formBody,
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+        });
+        const result = await resp.json();
+        if (result.result === 'success') {
+          successCount++;
+        }
+      }
+      
+      if (successCount === quantidade) {
+        alert(`${quantidade} venda(s) cadastrada(s) com sucesso!`);
         document.getElementById('vendaForm').reset();
+        document.getElementById('quantidade').value = 1;
       } else {
-        alert('Erro ao cadastrar venda.');
+        alert(`Erro ao cadastrar algumas vendas. ${successCount} de ${quantidade} vendas foram cadastradas.`);
       }
     } catch (err) {
       alert('Erro de conexão.');
@@ -72,41 +84,48 @@ if (document.getElementById('tabelaVendas')) {
   }
 
   function exibirRanking() {
-    const rankingDiv = document.getElementById('rankingVendas');
-    if (!rankingDiv) return;
-    // Ranking mensal
-    const rankingMes = calcularRanking(vendasFiltradas);
-    // Ranking do dia
-    const hoje = new Date();
-    const hojeStr = hoje.toISOString().slice(0, 10);
-    vendasDoDia = vendasFiltradas.filter(v => {
-      const dataVenda = new Date(v.data);
-      return dataVenda.toISOString().slice(0, 10) === hojeStr;
-    });
-    const rankingDia = calcularRanking(vendasDoDia);
-    let html = '<div class="ranking-bloco">';
-    html += '<h2>Ranking Mensal</h2>';
-    if (rankingMes.length === 0) {
-      html += '<div class="ranking-vazio">Nenhuma venda no mês.</div>';
-    } else {
-      html += '<ol class="ranking-lista">';
-      rankingMes.forEach(r => {
-        html += `<li><b>${r.colaborador}</b>: ${r.total} venda(s)</li>`;
-      });
-      html += '</ol>';
+    // Ranking mensal e diário separados
+    let dataSelecionada = document.getElementById('dataRanking')?.value;
+    if (!dataSelecionada) {
+      const hoje = new Date();
+      dataSelecionada = hoje.toISOString().slice(0, 10);
+      if(document.getElementById('dataRanking')) document.getElementById('dataRanking').value = dataSelecionada;
     }
-    html += '<h2>Ranking do Dia</h2>';
-    if (rankingDia.length === 0) {
-      html += '<div class="ranking-vazio">Nenhuma venda hoje.</div>';
-    } else {
-      html += '<ol class="ranking-lista">';
-      rankingDia.forEach(r => {
-        html += `<li><b>${r.colaborador}</b>: ${r.total} venda(s)</li>`;
-      });
-      html += '</ol>';
+
+    // Separar vendas
+    const is97 = v => v.produto === 'Oferta Principal Ticket 97';
+    const vendasMensal97 = vendasFiltradas.filter(is97);
+    const vendasMensalOutros = vendasFiltradas.filter(v => !is97(v));
+    const vendasDiario97 = vendasMensal97.filter(v => new Date(v.data).toISOString().slice(0, 10) === dataSelecionada);
+    const vendasDiarioOutros = vendasMensalOutros.filter(v => new Date(v.data).toISOString().slice(0, 10) === dataSelecionada);
+
+    // Calcular rankings
+    const rankingMensal97 = calcularRanking(vendasMensal97);
+    const rankingMensalOutros = calcularRanking(vendasMensalOutros);
+    const rankingDiario97 = calcularRanking(vendasDiario97);
+    const rankingDiarioOutros = calcularRanking(vendasDiarioOutros);
+
+    // Função para montar HTML do ranking
+    function htmlRanking(titulo, ranking, data = null) {
+      let html = `<div class='ranking-bloco'><h2>${titulo}${data ? ' ('+data+')' : ''}</h2>`;
+      if (ranking.length === 0) {
+        html += '<div class="ranking-vazio">Nenhuma venda.</div>';
+      } else {
+        html += '<ol class="ranking-lista">';
+        ranking.forEach(r => {
+          html += `<li><b>${r.colaborador}</b>: ${r.total} venda(s)</li>`;
+        });
+        html += '</ol>';
+      }
+      html += '</div>';
+      return html;
     }
-    html += '</div>';
-    rankingDiv.innerHTML = html;
+
+    // Preencher as divs
+    document.getElementById('rankingMensal97').innerHTML = htmlRanking('Ranking Mensal da Oferta de 97', rankingMensal97);
+    document.getElementById('rankingMensalOutros').innerHTML = htmlRanking('Ranking Mensal das Demais Ofertas', rankingMensalOutros);
+    document.getElementById('rankingDiario97').innerHTML = htmlRanking('Ranking Diário da Oferta de 97', rankingDiario97, dataSelecionada);
+    document.getElementById('rankingDiarioOutros').innerHTML = htmlRanking('Ranking Diário das Demais Ofertas', rankingDiarioOutros, dataSelecionada);
   }
 
   async function carregarVendas() {
@@ -149,12 +168,20 @@ if (document.getElementById('tabelaVendas')) {
       tbody.innerHTML = '<tr><td colspan="4">Nenhuma venda encontrada.</td></tr>';
       return;
     }
-    vendasFiltradas.sort((a, b) => new Date(b.data) - new Date(a.data));
+    // Agrupar vendas por data, colaborador e produto
+    const agrupadas = {};
     vendasFiltradas.forEach(v => {
-      const dataVenda = new Date(v.data);
-      const dataVendaStr = dataVenda.toISOString().slice(0, 10);
+      const dataVenda = new Date(v.data).toISOString().slice(0, 10);
+      const chave = `${dataVenda}|${v.colaborador}|${v.produto}`;
+      if (!agrupadas[chave]) {
+        agrupadas[chave] = { data: dataVenda, colaborador: v.colaborador, produto: v.produto, quantidade: 0 };
+      }
+      agrupadas[chave].quantidade++;
+    });
+    // Exibir linhas agrupadas
+    Object.values(agrupadas).forEach(v => {
       const tr = document.createElement('tr');
-      tr.innerHTML = `<td>${dataVendaStr}</td><td>${v.colaborador}</td><td>${v.produto}</td><td>${v.valor}</td>`;
+      tr.innerHTML = `<td>${v.data}</td><td>${v.colaborador}</td><td>${v.produto}</td><td>${v.quantidade}</td>`;
       tbody.appendChild(tr);
     });
   }

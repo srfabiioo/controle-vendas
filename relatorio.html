@@ -18,6 +18,7 @@
       <option>Fabio Felipe</option>
       <option>Elder</option>
       <option>Luan</option>
+      <option>Allysson</option>
     </select>
     <label for="produtoFiltro">Filtrar por produto:</label>
     <select id="produtoFiltro">
@@ -28,10 +29,19 @@
       <option>LTV 1 = Atualizaçao Cadastral Ticket 47</option>
       <option>LTV 2 = Blindagem Ticket 53</option>
     </select>
+    <label for="dataRanking">Ranking do dia:</label>
+    <input type="date" id="dataRanking">
     <button onclick="filtrarVendas()">Filtrar</button>
   </div>
   <br>
-  <div id="rankingVendas"></div>
+  <div style="display: flex; gap: 32px; justify-content: center; flex-wrap: wrap;">
+    <div id="rankingMensal97" style="min-width: 250px;"></div>
+    <div id="rankingMensalOutros" style="min-width: 250px;"></div>
+  </div>
+  <div style="display: flex; gap: 32px; justify-content: center; flex-wrap: wrap; margin-top: 16px;">
+    <div id="rankingDiario97" style="min-width: 250px;"></div>
+    <div id="rankingDiarioOutros" style="min-width: 250px;"></div>
+  </div>
   <div id="calendario"></div>
   <br>
   <table border="1" id="tabelaVendas">
@@ -40,7 +50,7 @@
         <th>Data</th>
         <th>Colaborador</th>
         <th>Produto</th>
-        <th>Valor (R$)</th>
+        <th>Quantidade</th>
       </tr>
     </thead>
     <tbody>
