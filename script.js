@@ -92,12 +92,15 @@ if (document.getElementById('tabelaVendas')) {
       if(document.getElementById('dataRanking')) document.getElementById('dataRanking').value = dataSelecionada;
     }
 
-    // Separar vendas
+    // Separar vendas para o Ranking do Período
     const is97 = v => v.produto === 'Oferta Principal Ticket 97';
     const vendasPeriodo97 = vendasFiltradas.filter(is97);
     const vendasPeriodoOutros = vendasFiltradas.filter(v => !is97(v));
-    const vendasDiario97 = vendasFiltradas.filter(v => new Date(v.data).toISOString().slice(0, 10) === dataSelecionada);
-    const vendasDiarioOutros = vendasFiltradas.filter(v => new Date(v.data).toISOString().slice(0, 10) === dataSelecionada);
+    
+    // Separar vendas para o Ranking Diário (usa a lista de vendas completa, não a filtrada)
+    const vendasDoDia = vendas.filter(v => new Date(v.data).toISOString().slice(0, 10) === dataSelecionada);
+    const vendasDiario97 = vendasDoDia.filter(is97);
+    const vendasDiarioOutros = vendasDoDia.filter(v => !is97(v));
 
     // Calcular rankings
     const rankingPeriodo97 = calcularRanking(vendasPeriodo97);
