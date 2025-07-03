@@ -94,14 +94,14 @@ if (document.getElementById('tabelaVendas')) {
 
     // Separar vendas
     const is97 = v => v.produto === 'Oferta Principal Ticket 97';
-    const vendasMensal97 = vendasFiltradas.filter(is97);
-    const vendasMensalOutros = vendasFiltradas.filter(v => !is97(v));
-    const vendasDiario97 = vendasMensal97.filter(v => new Date(v.data).toISOString().slice(0, 10) === dataSelecionada);
-    const vendasDiarioOutros = vendasMensalOutros.filter(v => new Date(v.data).toISOString().slice(0, 10) === dataSelecionada);
+    const vendasAnual97 = vendasFiltradas.filter(is97);
+    const vendasAnualOutros = vendasFiltradas.filter(v => !is97(v));
+    const vendasDiario97 = vendasAnual97.filter(v => new Date(v.data).toISOString().slice(0, 10) === dataSelecionada);
+    const vendasDiarioOutros = vendasAnualOutros.filter(v => new Date(v.data).toISOString().slice(0, 10) === dataSelecionada);
 
     // Calcular rankings
-    const rankingMensal97 = calcularRanking(vendasMensal97);
-    const rankingMensalOutros = calcularRanking(vendasMensalOutros);
+    const rankingAnual97 = calcularRanking(vendasAnual97);
+    const rankingAnualOutros = calcularRanking(vendasAnualOutros);
     const rankingDiario97 = calcularRanking(vendasDiario97);
     const rankingDiarioOutros = calcularRanking(vendasDiarioOutros);
 
@@ -122,8 +122,8 @@ if (document.getElementById('tabelaVendas')) {
     }
 
     // Preencher as divs
-    document.getElementById('rankingMensal97').innerHTML = htmlRanking('Ranking Mensal da Oferta de 97', rankingMensal97);
-    document.getElementById('rankingMensalOutros').innerHTML = htmlRanking('Ranking Mensal das Demais Ofertas', rankingMensalOutros);
+    document.getElementById('rankingAnual97').innerHTML = htmlRanking('Ranking Anual da Oferta de 97', rankingAnual97);
+    document.getElementById('rankingAnualOutros').innerHTML = htmlRanking('Ranking Anual das Demais Ofertas', rankingAnualOutros);
     document.getElementById('rankingDiario97').innerHTML = htmlRanking('Ranking Diário da Oferta de 97', rankingDiario97, dataSelecionada);
     document.getElementById('rankingDiarioOutros').innerHTML = htmlRanking('Ranking Diário das Demais Ofertas', rankingDiarioOutros, dataSelecionada);
   }
@@ -142,18 +142,22 @@ if (document.getElementById('tabelaVendas')) {
     const colaborador = document.getElementById('colaboradorFiltro').value;
     const produto = document.getElementById('produtoFiltro').value;
     const hoje = new Date();
-    // Mostrar apenas o mês atual
+    // Mostrar apenas o ano atual
+    const primeiroDiaAno = new Date(hoje.getFullYear(), 0, 1);
+    const ultimoDiaAno = new Date(hoje.getFullYear(), 11, 31);
+    const primeiroDiaAnoStr = primeiroDiaAno.toISOString().slice(0, 10);
+    const ultimoDiaAnoStr = ultimoDiaAno.toISOString().slice(0, 10);
+
     const primeiroDiaMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
     const ultimoDiaMes = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0);
-    const primeiroDiaMesStr = primeiroDiaMes.toISOString().slice(0, 10);
-    const ultimoDiaMesStr = ultimoDiaMes.toISOString().slice(0, 10);
+
     vendasFiltradas = vendas.filter(v => {
       const dataVenda = new Date(v.data);
       const dataVendaStr = dataVenda.toISOString().slice(0, 10);
       return (
         (!colaborador || v.colaborador === colaborador) &&
         (!produto || v.produto === produto) &&
-        dataVendaStr >= primeiroDiaMesStr && dataVendaStr <= ultimoDiaMesStr
+        dataVendaStr >= primeiroDiaAnoStr && dataVendaStr <= ultimoDiaAnoStr
       );
     });
     atualizarTabela();
