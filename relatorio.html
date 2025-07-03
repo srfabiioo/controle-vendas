@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Relatório de Vendas (Ano Atual)</h1>
+  <h1>Relatório de Vendas</h1>
   <div>
     <label for="colaboradorFiltro">Filtrar por colaborador:</label>
     <select id="colaboradorFiltro">
@@ -29,16 +29,20 @@
       <option>LTV 1 = Atualizaçao Cadastral Ticket 47</option>
       <option>LTV 2 = Blindagem Ticket 53</option>
     </select>
-    <label for="dataRanking">Ranking do dia:</label>
-    <input type="date" id="dataRanking">
+    <label for="dataInicio">Período de:</label>
+    <input type="date" id="dataInicio">
+    <label for="dataFim">Até:</label>
+    <input type="date" id="dataFim">
     <button onclick="filtrarVendas()">Filtrar</button>
   </div>
   <br>
   <div style="display: flex; gap: 32px; justify-content: center; flex-wrap: wrap;">
-    <div id="rankingAnual97" style="min-width: 250px;"></div>
-    <div id="rankingAnualOutros" style="min-width: 250px;"></div>
+    <div id="rankingPeriodo97" style="min-width: 250px;"></div>
+    <div id="rankingPeriodoOutros" style="min-width: 250px;"></div>
   </div>
-  <div style="display: flex; gap: 32px; justify-content: center; flex-wrap: wrap; margin-top: 16px;">
+  <div style="display: flex; gap: 32px; justify-content: center; flex-wrap: wrap; margin-top: 16px; align-items: center;">
+    <label for="dataRanking">Ranking do dia:</label>
+    <input type="date" id="dataRanking" onchange="filtrarVendas()">
     <div id="rankingDiario97" style="min-width: 250px;"></div>
     <div id="rankingDiarioOutros" style="min-width: 250px;"></div>
   </div>

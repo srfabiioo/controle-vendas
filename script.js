@@ -94,14 +94,14 @@ if (document.getElementById('tabelaVendas')) {
 
     // Separar vendas
     const is97 = v => v.produto === 'Oferta Principal Ticket 97';
-    const vendasAnual97 = vendasFiltradas.filter(is97);
-    const vendasAnualOutros = vendasFiltradas.filter(v => !is97(v));
-    const vendasDiario97 = vendasAnual97.filter(v => new Date(v.data).toISOString().slice(0, 10) === dataSelecionada);
-    const vendasDiarioOutros = vendasAnualOutros.filter(v => new Date(v.data).toISOString().slice(0, 10) === dataSelecionada);
+    const vendasPeriodo97 = vendasFiltradas.filter(is97);
+    const vendasPeriodoOutros = vendasFiltradas.filter(v => !is97(v));
+    const vendasDiario97 = vendasFiltradas.filter(v => new Date(v.data).toISOString().slice(0, 10) === dataSelecionada);
+    const vendasDiarioOutros = vendasFiltradas.filter(v => new Date(v.data).toISOString().slice(0, 10) === dataSelecionada);
 
     // Calcular rankings
-    const rankingAnual97 = calcularRanking(vendasAnual97);
-    const rankingAnualOutros = calcularRanking(vendasAnualOutros);
+    const rankingPeriodo97 = calcularRanking(vendasPeriodo97);
+    const rankingPeriodoOutros = calcularRanking(vendasPeriodoOutros);
     const rankingDiario97 = calcularRanking(vendasDiario97);
     const rankingDiarioOutros = calcularRanking(vendasDiarioOutros);
 
@@ -122,8 +122,8 @@ if (document.getElementById('tabelaVendas')) {
     }
 
     // Preencher as divs
-    document.getElementById('rankingAnual97').innerHTML = htmlRanking('Ranking Anual da Oferta de 97', rankingAnual97);
-    document.getElementById('rankingAnualOutros').innerHTML = htmlRanking('Ranking Anual das Demais Ofertas', rankingAnualOutros);
+    document.getElementById('rankingPeriodo97').innerHTML = htmlRanking('Ranking do Período (Oferta de 97)', rankingPeriodo97);
+    document.getElementById('rankingPeriodoOutros').innerHTML = htmlRanking('Ranking do Período (Demais Ofertas)', rankingPeriodoOutros);
     document.getElementById('rankingDiario97').innerHTML = htmlRanking('Ranking Diário da Oferta de 97', rankingDiario97, dataSelecionada);
     document.getElementById('rankingDiarioOutros').innerHTML = htmlRanking('Ranking Diário das Demais Ofertas', rankingDiarioOutros, dataSelecionada);
   }
@@ -141,25 +141,38 @@ if (document.getElementById('tabelaVendas')) {
   window.filtrarVendas = function() {
     const colaborador = document.getElementById('colaboradorFiltro').value;
     const produto = document.getElementById('produtoFiltro').value;
-    const hoje = new Date();
-    // Mostrar apenas o ano atual
-    const primeiroDiaAno = new Date(hoje.getFullYear(), 0, 1);
-    const ultimoDiaAno = new Date(hoje.getFullYear(), 11, 31);
-    const primeiroDiaAnoStr = primeiroDiaAno.toISOString().slice(0, 10);
-    const ultimoDiaAnoStr = ultimoDiaAno.toISOString().slice(0, 10);
-
-    const primeiroDiaMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
-    const ultimoDiaMes = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0);
+    const dataInicio = document.getElementById('dataInicio').value;
+    const dataFim = document.getElementById('dataFim').value;
 
     vendasFiltradas = vendas.filter(v => {
-      const dataVenda = new Date(v.data);
-      const dataVendaStr = dataVenda.toISOString().slice(0, 10);
+      const dataVendaStr = new Date(v.data).toISOString().slice(0, 10);
+      
+      let noPeriodo = true;
+      if (dataInicio && dataFim) {
+        noPeriodo = dataVendaStr >= dataInicio && dataVendaStr <= dataFim;
+      } else if (dataInicio) {
+        noPeriodo = dataVendaStr >= dataInicio;
+      } else if (dataFim) {
+        noPeriodo = dataVendaStr <= dataFim;
+      } else {
+        // Padrão: ano atual
+        const hoje = new Date();
+        const primeiroDiaAno = new Date(hoje.getFullYear(), 0, 1).toISOString().slice(0, 10);
+        const ultimoDiaAno = new Date(hoje.getFullYear(), 11, 31).toISOString().slice(0, 10);
+        noPeriodo = dataVendaStr >= primeiroDiaAno && dataVendaStr <= ultimoDiaAno;
+      }
+
       return (
         (!colaborador || v.colaborador === colaborador) &&
         (!produto || v.produto === produto) &&
-        dataVendaStr >= primeiroDiaAnoStr && dataVendaStr <= ultimoDiaAnoStr
+        noPeriodo
       );
     });
+    
+    const hoje = new Date();
+    const primeiroDiaMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+    const ultimoDiaMes = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0);
+
     atualizarTabela();
     atualizarCalendario(primeiroDiaMes, ultimoDiaMes);
     exibirRanking();
