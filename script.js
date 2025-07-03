@@ -169,12 +169,20 @@ if (document.getElementById('tabelaVendas')) {
       );
     });
     
-    const hoje = new Date();
-    const primeiroDiaMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
-    const ultimoDiaMes = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0);
+    let primeiroDiaParaCalendario, ultimoDiaParaCalendario;
+    if (dataInicio && dataFim) {
+      // Adiciona 'T00:00:00' para evitar problemas de fuso horário
+      primeiroDiaParaCalendario = new Date(dataInicio + 'T00:00:00');
+      ultimoDiaParaCalendario = new Date(dataFim + 'T00:00:00');
+    } else {
+      // Se não houver intervalo, exibe o mês atual no calendário
+      const hoje = new Date();
+      primeiroDiaParaCalendario = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+      ultimoDiaParaCalendario = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0);
+    }
 
     atualizarTabela();
-    atualizarCalendario(primeiroDiaMes, ultimoDiaMes);
+    atualizarCalendario(primeiroDiaParaCalendario, ultimoDiaParaCalendario);
     exibirRanking();
   }
 
