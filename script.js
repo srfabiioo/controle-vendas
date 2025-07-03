@@ -84,29 +84,14 @@ if (document.getElementById('tabelaVendas')) {
   }
 
   function exibirRanking() {
-    // Ranking mensal e diário separados
-    let dataSelecionada = document.getElementById('dataRanking')?.value;
-    if (!dataSelecionada) {
-      const hoje = new Date();
-      dataSelecionada = hoje.toISOString().slice(0, 10);
-      if(document.getElementById('dataRanking')) document.getElementById('dataRanking').value = dataSelecionada;
-    }
-
     // Separar vendas para o Ranking do Período
     const is97 = v => v.produto === 'Oferta Principal Ticket 97';
     const vendasPeriodo97 = vendasFiltradas.filter(is97);
     const vendasPeriodoOutros = vendasFiltradas.filter(v => !is97(v));
     
-    // Separar vendas para o Ranking Diário (usa a lista de vendas completa, não a filtrada)
-    const vendasDoDia = vendas.filter(v => new Date(v.data).toISOString().slice(0, 10) === dataSelecionada);
-    const vendasDiario97 = vendasDoDia.filter(is97);
-    const vendasDiarioOutros = vendasDoDia.filter(v => !is97(v));
-
     // Calcular rankings
     const rankingPeriodo97 = calcularRanking(vendasPeriodo97);
     const rankingPeriodoOutros = calcularRanking(vendasPeriodoOutros);
-    const rankingDiario97 = calcularRanking(vendasDiario97);
-    const rankingDiarioOutros = calcularRanking(vendasDiarioOutros);
 
     // Função para montar HTML do ranking
     function htmlRanking(titulo, ranking, data = null) {
@@ -127,8 +112,6 @@ if (document.getElementById('tabelaVendas')) {
     // Preencher as divs
     document.getElementById('rankingPeriodo97').innerHTML = htmlRanking('Ranking do Período (Oferta de 97)', rankingPeriodo97);
     document.getElementById('rankingPeriodoOutros').innerHTML = htmlRanking('Ranking do Período (Demais Ofertas)', rankingPeriodoOutros);
-    document.getElementById('rankingDiario97').innerHTML = htmlRanking('Ranking Diário da Oferta de 97', rankingDiario97, dataSelecionada);
-    document.getElementById('rankingDiarioOutros').innerHTML = htmlRanking('Ranking Diário das Demais Ofertas', rankingDiarioOutros, dataSelecionada);
   }
 
   async function carregarVendas() {
