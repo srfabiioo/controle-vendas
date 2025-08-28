@@ -1,42 +1,94 @@
 // === CONFIGURE AQUI A URL DO SEU APPS SCRIPT ===
 const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxsIbUe4MIxPiVA828XDsoY4iwLBXv0qY66Bp7ka3e9TI6nfIq0GdzEBEn9Xi9r61K0/exec';
 
-// --- Formulário de Cadastro ---
+// === UTILITÁRIOS ===
+function showMessage(message, type = 'success') {
+  const messageDiv = document.createElement('div');
+  messageDiv.className = `${type}-message fade-in`;
+  messageDiv.innerHTML = `
+    <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+    ${message}
+  `;
+  
+  // Remove mensagens anteriores
+  const existingMessages = document.querySelectorAll('.success-message, .error-message');
+  existingMessages.forEach(msg => msg.remove());
+  
+  // Adiciona nova mensagem
+  const container = document.querySelector('.container');
+  container.insertBefore(messageDiv, container.firstChild);
+  
+  // Remove após 5 segundos
+  setTimeout(() => {
+    messageDiv.remove();
+  }, 5000);
+}
+
+function setLoading(element, loading = true) {
+  if (loading) {
+    element.classList.add('loading');
+    element.disabled = true;
+  } else {
+    element.classList.remove('loading');
+    element.disabled = false;
+  }
+}
+
+// === FORMULÁRIO DE CADASTRO ===
 if (document.getElementById('vendaForm')) {
   const produtoValores = {
     'Oferta Principal Ticket 97': 97,
     'Oferta Principal Ticket 67': 67,
     'Oferta Principal Ticket 47': 47,
-    'LTV 1 = Atualizaçao Cadastral Ticket 47': 47,
-    'LTV 2 = Blindagem Ticket 53': 53
+    'LTV 1 = Ticket 47': 47,
+    'LTV 2 = Ticket 53': 53
   };
 
+  // Atualizar valor automaticamente
   document.getElementById('produto').addEventListener('change', function() {
     const valor = produtoValores[this.value] || '';
     document.getElementById('valor').value = valor;
   });
 
+  // Definir data atual por padrão
+  document.getElementById('data').value = new Date().toISOString().slice(0, 10);
+
+  // Submissão do formulário
   document.getElementById('vendaForm').addEventListener('submit', async function(e) {
     e.preventDefault();
+    
     const submitBtn = this.querySelector('button[type="submit"]');
     const quantidade = parseInt(document.getElementById('quantidade').value);
+    const colaborador = document.getElementById('colaborador').value;
+    const produto = document.getElementById('produto').value;
+    const data = document.getElementById('data').value;
     
-    // Pop-up de confirmação
-    const msg = `Confirma o cadastro?\n\nData: ${document.getElementById('data').value}\nColaborador: ${document.getElementById('colaborador').value}\nProduto: ${document.getElementById('produto').value}\nQuantidade: ${quantidade}`;
+    // Validações
+    if (!colaborador || !produto || !data) {
+      showMessage('Por favor, preencha todos os campos obrigatórios.', 'error');
+      return;
+    }
+    
+    // Pop-up de confirmação melhorado
+    const msg = `Confirma o cadastro?\n\n📅 Data: ${data}\n👤 Colaborador: ${colaborador}\n📦 Produto: ${produto}\n🔢 Quantidade: ${quantidade}`;
     if (!confirm(msg)) {
       return;
     }
 
-    // Evitar duplo clique
-    submitBtn.disabled = true;
+    // Feedback visual de carregamento
+    setLoading(submitBtn, true);
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Cadastrando...';
+    
     try {
       let successCount = 0;
+      const totalVendas = quantidade;
+      
       for (let i = 0; i < quantidade; i++) {
         const dados = {
-          colaborador: document.getElementById('colaborador').value,
-          produto: document.getElementById('produto').value,
+          colaborador: colaborador,
+          produto: produto,
           valor: document.getElementById('valor').value,
-          data: document.getElementById('data').value
+          data: data
         };
         
         const formBody = new URLSearchParams(dados).toString();
@@ -45,31 +97,35 @@ if (document.getElementById('vendaForm')) {
           body: formBody,
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
         });
+        
         const result = await resp.json();
         if (result.result === 'success') {
           successCount++;
         }
       }
       
-      if (successCount === quantidade) {
-        alert(`${quantidade} venda(s) cadastrada(s) com sucesso!`);
+      if (successCount === totalVendas) {
+        showMessage(`✅ ${totalVendas} venda(s) cadastrada(s) com sucesso!`);
         document.getElementById('vendaForm').reset();
         document.getElementById('quantidade').value = 1;
+        document.getElementById('data').value = new Date().toISOString().slice(0, 10);
       } else {
-        alert(`Erro ao cadastrar algumas vendas. ${successCount} de ${quantidade} vendas foram cadastradas.`);
+        showMessage(`⚠️ Erro ao cadastrar algumas vendas. ${successCount} de ${totalVendas} vendas foram cadastradas.`, 'error');
       }
     } catch (err) {
-      alert('Erro de conexão.');
+      showMessage('❌ Erro de conexão. Verifique sua internet e tente novamente.', 'error');
+      console.error('Erro:', err);
+    } finally {
+      setLoading(submitBtn, false);
+      submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Cadastrar Venda';
     }
-    submitBtn.disabled = false;
   });
 }
 
-// --- Relatório ---
+// === RELATÓRIO ===
 if (document.getElementById('tabelaVendas')) {
   let vendas = [];
   let vendasFiltradas = [];
-  let vendasDoDia = [];
 
   function calcularRanking(vendasArray) {
     const ranking = {};
@@ -77,10 +133,14 @@ if (document.getElementById('tabelaVendas')) {
       if (!ranking[v.colaborador]) ranking[v.colaborador] = 0;
       ranking[v.colaborador]++;
     });
-    // Ordena por mais vendas
+    
     return Object.entries(ranking)
       .sort((a, b) => b[1] - a[1])
-      .map(([colaborador, total]) => ({ colaborador, total }));
+      .map(([colaborador, total], index) => ({ 
+        colaborador, 
+        total, 
+        position: index + 1 
+      }));
   }
 
   function exibirRanking() {
@@ -93,25 +153,61 @@ if (document.getElementById('tabelaVendas')) {
     const rankingPeriodo97 = calcularRanking(vendasPeriodo97);
     const rankingPeriodoOutros = calcularRanking(vendasPeriodoOutros);
 
-    // Função para montar HTML do ranking
-    function htmlRanking(titulo, ranking, data = null) {
-      let html = `<div class='ranking-bloco'><h2>${titulo}${data ? ' ('+data+')' : ''}</h2>`;
+    // Função para montar HTML do ranking moderno
+    function htmlRanking(titulo, ranking, icon) {
+      let html = `
+        <div class="ranking-card">
+          <h3 class="ranking-title">
+            <i class="fas fa-${icon}"></i>
+            ${titulo}
+          </h3>
+      `;
+      
       if (ranking.length === 0) {
-        html += '<div class="ranking-vazio">Nenhuma venda.</div>';
+        html += `
+          <div class="text-center text-muted">
+            <i class="fas fa-inbox fa-2x mb-md"></i>
+            <p>Nenhuma venda encontrada</p>
+          </div>
+        `;
       } else {
-        html += '<ol class="ranking-lista">';
+        html += '<ul class="ranking-list">';
         ranking.forEach(r => {
-          html += `<li><b>${r.colaborador}</b>: ${r.total} venda(s)</li>`;
+          const medalIcon = r.position === 1 ? 'fa-medal' : 
+                           r.position === 2 ? 'fa-medal' : 
+                           r.position === 3 ? 'fa-medal' : 'fa-user';
+          const medalColor = r.position === 1 ? '#FFD700' : 
+                           r.position === 2 ? '#C0C0C0' : 
+                           r.position === 3 ? '#CD7F32' : 'var(--primary-color)';
+          
+          html += `
+            <li class="ranking-item">
+              <div class="ranking-position">
+                <i class="fas ${medalIcon}" style="color: ${medalColor};"></i>
+                ${r.position}º
+              </div>
+              <div class="ranking-name">${r.colaborador}</div>
+              <div class="ranking-count">${r.total} venda(s)</div>
+            </li>
+          `;
         });
-        html += '</ol>';
+        html += '</ul>';
       }
       html += '</div>';
       return html;
     }
 
     // Preencher as divs
-    document.getElementById('rankingPeriodo97').innerHTML = htmlRanking('Ranking do Período (Oferta de 97)', rankingPeriodo97);
-    document.getElementById('rankingPeriodoOutros').innerHTML = htmlRanking('Ranking do Período (Demais Ofertas)', rankingPeriodoOutros);
+    document.getElementById('rankingPeriodo97').innerHTML = htmlRanking(
+      'Ranking - Oferta 97', 
+      rankingPeriodo97, 
+      'trophy'
+    );
+    document.getElementById('rankingPeriodoOutros').innerHTML = htmlRanking(
+      'Ranking - Demais Ofertas', 
+      rankingPeriodoOutros, 
+      'star'
+    );
   }
 
   async function carregarVendas() {
@@ -120,7 +216,9 @@ if (document.getElementById('tabelaVendas')) {
       vendas = await resp.json();
       filtrarVendas();
     } catch (err) {
-      document.getElementById('tabelaVendas').querySelector('tbody').innerHTML = '<tr><td colspan="4">Erro ao carregar dados.</td></tr>';
+      showMessage('❌ Erro ao carregar dados. Verifique sua conexão.', 'error');
+      document.getElementById('tabelaVendas').querySelector('tbody').innerHTML = 
+        '<tr><td colspan="4" class="text-center text-muted">Erro ao carregar dados.</td></tr>';
     }
   }
 
@@ -157,7 +255,6 @@ if (document.getElementById('tabelaVendas')) {
     
     let primeiroDiaParaCalendario, ultimoDiaParaCalendario;
     if (dataInicio && dataFim) {
-      // Adiciona 'T00:00:00' para evitar problemas de fuso horário
       primeiroDiaParaCalendario = new Date(dataInicio + 'T00:00:00');
       ultimoDiaParaCalendario = new Date(dataFim + 'T00:00:00');
     } else {
@@ -175,24 +272,44 @@ if (document.getElementById('tabelaVendas')) {
   function atualizarTabela() {
     const tbody = document.getElementById('tabelaVendas').querySelector('tbody');
     tbody.innerHTML = '';
+    
     if (vendasFiltradas.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="4">Nenhuma venda encontrada.</td></tr>';
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="4" class="text-center text-muted">
+            <i class="fas fa-search fa-2x mb-md"></i>
+            <p>Nenhuma venda encontrada para os filtros aplicados.</p>
+          </td>
+        </tr>
+      `;
       return;
     }
+    
     // Agrupar vendas por data, colaborador e produto
     const agrupadas = {};
     vendasFiltradas.forEach(v => {
       const dataVenda = new Date(v.data).toISOString().slice(0, 10);
       const chave = `${dataVenda}|${v.colaborador}|${v.produto}`;
       if (!agrupadas[chave]) {
-        agrupadas[chave] = { data: dataVenda, colaborador: v.colaborador, produto: v.produto, quantidade: 0 };
+        agrupadas[chave] = { 
+          data: dataVenda, 
+          colaborador: v.colaborador, 
+          produto: v.produto, 
+          quantidade: 0 
+        };
       }
       agrupadas[chave].quantidade++;
     });
+    
     // Exibir linhas agrupadas
     Object.values(agrupadas).forEach(v => {
       const tr = document.createElement('tr');
-      tr.innerHTML = `<td>${v.data}</td><td>${v.colaborador}</td><td>${v.produto}</td><td>${v.quantidade}</td>`;
+      tr.innerHTML = `
+        <td><i class="fas fa-calendar-day"></i> ${v.data}</td>
+        <td><i class="fas fa-user"></i> ${v.colaborador}</td>
+        <td><i class="fas fa-box"></i> ${v.produto}</td>
+        <td><span class="ranking-count">${v.quantidade}</span></td>
+      `;
       tbody.appendChild(tr);
     });
   }
@@ -200,6 +317,7 @@ if (document.getElementById('tabelaVendas')) {
   function atualizarCalendario(primeiroDia, ultimoDia) {
     const calendarioDiv = document.getElementById('calendario');
     calendarioDiv.innerHTML = '';
+    
     let dias = [];
     for (let d = new Date(primeiroDia); d <= ultimoDia; d.setDate(d.getDate() + 1)) {
       const dataStr = d.toISOString().slice(0, 10);
@@ -209,20 +327,41 @@ if (document.getElementById('tabelaVendas')) {
       });
       dias.push({ data: dataStr, vendas: vendasNoDia });
     }
+    
     // Montar o calendário em semanas (7 dias por linha)
-    let html = '<div class="calendario-scroll"><table border="1"><tbody>';
+    let html = '<table class="calendar-table"><tbody>';
     for (let i = 0; i < dias.length; i += 7) {
       html += '<tr>';
       for (let j = 0; j < 7; j++) {
         const dia = dias[i + j];
         if (dia) {
-          html += `<td class="calendario-dia"><div class="calendario-data">${dia.data}</div>`;
+          const dataFormatada = new Date(dia.data).toLocaleDateString('pt-BR', {
+            day: '2-digit',
+            month: '2-digit'
+          });
+          
+          html += `<td class="calendar-day">
+            <div class="calendar-date">${dataFormatada}</div>`;
+          
           if (dia.vendas.length > 0) {
+            // Agrupar vendas por colaborador
+            const vendasPorColaborador = {};
             dia.vendas.forEach(v => {
-              html += `<div class="calendario-venda">${v.colaborador}:<br>${v.produto}<br>(R$${v.valor})</div>`;
+              if (!vendasPorColaborador[v.colaborador]) {
+                vendasPorColaborador[v.colaborador] = [];
+              }
+              vendasPorColaborador[v.colaborador].push(v);
+            });
+            
+            Object.entries(vendasPorColaborador).forEach(([colaborador, vendas]) => {
+              const totalVendas = vendas.length;
+              html += `<div class="calendar-sale">
+                <strong>${colaborador}</strong><br>
+                ${totalVendas} venda(s)
+              </div>`;
             });
           } else {
-            html += '<div class="calendario-sem">Sem vendas</div>';
+            html += '<div class="calendar-empty">Sem vendas</div>';
           }
           html += '</td>';
         } else {
@@ -231,9 +370,10 @@ if (document.getElementById('tabelaVendas')) {
       }
       html += '</tr>';
     }
-    html += '</tbody></table></div>';
+    html += '</tbody></table>';
     calendarioDiv.innerHTML = html;
   }
 
+  // Carregar dados ao iniciar
   carregarVendas();
 } 

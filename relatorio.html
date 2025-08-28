@@ -3,60 +3,142 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Relatório de Vendas</title>
+  <title>Relatórios - Sistema de Controle de Vendas</title>
   <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-  <h1>Relatório de Vendas</h1>
-  <div>
-    <label for="colaboradorFiltro">Filtrar por colaborador:</label>
-    <select id="colaboradorFiltro">
-      <option value="">Todos</option>
-      <option>Daniel</option>
-      <option>Juan</option>
-      <option>Mateus Felipe</option>
-      <option>Fabio Felipe</option>
-      <option>Elder</option>
-      <option>Luan</option>
-      <option>Allysson</option>
-    </select>
-    <label for="produtoFiltro">Filtrar por produto:</label>
-    <select id="produtoFiltro">
-      <option value="">Todos</option>
-      <option>Oferta Principal Ticket 97</option>
-      <option>Oferta Principal Ticket 67</option>
-      <option>Oferta Principal Ticket 47</option>
-      <option>LTV 1 = Atualizaçao Cadastral Ticket 47</option>
-      <option>LTV 2 = Blindagem Ticket 53</option>
-    </select>
-    <label for="dataInicio">Período de:</label>
-    <input type="date" id="dataInicio">
-    <label for="dataFim">Até:</label>
-    <input type="date" id="dataFim">
-    <button onclick="filtrarVendas()">Filtrar</button>
+  <div class="container">
+    <h1>
+      <i class="fas fa-chart-bar"></i>
+      Relatórios de Vendas
+    </h1>
+
+    <!-- Navegação -->
+    <nav class="nav">
+      <a href="index.html" class="nav-link">
+        <i class="fas fa-plus-circle"></i>
+        Cadastrar Venda
+      </a>
+      <a href="relatorio.html" class="nav-link active">
+        <i class="fas fa-chart-bar"></i>
+        Relatórios
+      </a>
+    </nav>
+
+    <!-- Card de Filtros -->
+    <div class="card fade-in">
+      <div class="card-header">
+        <div class="card-icon">
+          <i class="fas fa-filter"></i>
+        </div>
+        <h2 class="card-title">Filtros de Pesquisa</h2>
+      </div>
+
+      <div class="filters">
+        <div class="filter-group">
+          <label for="colaboradorFiltro" class="form-label">
+            <i class="fas fa-user"></i>
+            Colaborador
+          </label>
+          <select id="colaboradorFiltro" class="form-select">
+            <option value="">Todos os colaboradores</option>
+            <option value="Daniel">Daniel</option>
+            <option value="Juan">Juan</option>
+            <option value="Mateus Felipe">Mateus Felipe</option>
+            <option value="Fabio Felipe">Fabio Felipe</option>
+            <option value="Elder">Elder</option>
+            <option value="Luan">Luan</option>
+            <option value="Allysson">Allysson</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="produtoFiltro" class="form-label">
+            <i class="fas fa-box"></i>
+            Produto
+          </label>
+          <select id="produtoFiltro" class="form-select">
+            <option value="">Todos os produtos</option>
+            <option value="Oferta Principal Ticket 97">Oferta Principal Ticket 97</option>
+            <option value="Oferta Principal Ticket 67">Oferta Principal Ticket 67</option>
+            <option value="Oferta Principal Ticket 47">Oferta Principal Ticket 47</option>
+            <option value="LTV 1 = Ticket 47">LTV 1 = Ticket 47</option>
+            <option value="LTV 2 = Ticket 53">LTV 2 = Ticket 53</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="dataInicio" class="form-label">
+            <i class="fas fa-calendar-day"></i>
+            Data Início
+          </label>
+          <input type="date" id="dataInicio" class="form-input">
+        </div>
+
+        <div class="filter-group">
+          <label for="dataFim" class="form-label">
+            <i class="fas fa-calendar-day"></i>
+            Data Fim
+          </label>
+          <input type="date" id="dataFim" class="form-input">
+        </div>
+      </div>
+
+      <div class="text-center">
+        <button onclick="filtrarVendas()" class="btn btn-primary">
+          <i class="fas fa-search"></i>
+          Aplicar Filtros
+        </button>
+      </div>
+    </div>
+
+    <!-- Rankings -->
+    <div class="ranking-grid">
+      <div id="rankingPeriodo97" class="ranking-card slide-in"></div>
+      <div id="rankingPeriodoOutros" class="ranking-card slide-in"></div>
+    </div>
+
+    <!-- Calendário -->
+    <div class="card fade-in">
+      <div class="card-header">
+        <div class="card-icon">
+          <i class="fas fa-calendar-alt"></i>
+        </div>
+        <h2 class="card-title">Calendário de Vendas</h2>
+      </div>
+      
+      <div id="calendario" class="calendar-container"></div>
+    </div>
+
+    <!-- Tabela de Vendas -->
+    <div class="card fade-in">
+      <div class="card-header">
+        <div class="card-icon">
+          <i class="fas fa-table"></i>
+        </div>
+        <h2 class="card-title">Lista de Vendas</h2>
+      </div>
+      
+      <div class="table-container">
+        <table class="table" id="tabelaVendas">
+          <thead>
+            <tr>
+              <th>Data</th>
+              <th>Colaborador</th>
+              <th>Produto</th>
+              <th>Quantidade</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Dados preenchidos via JavaScript -->
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
-  <br>
-  <div style="display: flex; gap: 32px; justify-content: center; flex-wrap: wrap;">
-    <div id="rankingPeriodo97" style="min-width: 250px;"></div>
-    <div id="rankingPeriodoOutros" style="min-width: 250px;"></div>
-  </div>
-  <div id="calendario"></div>
-  <br>
-  <table border="1" id="tabelaVendas">
-    <thead>
-      <tr>
-        <th>Data</th>
-        <th>Colaborador</th>
-        <th>Produto</th>
-        <th>Quantidade</th>
-      </tr>
-    </thead>
-    <tbody>
-      <!-- Dados preenchidos via JS -->
-    </tbody>
-  </table>
-  <br>
-  <a href="index.html">Voltar ao Cadastro</a>
+
   <script src="script.js"></script>
 </body>
 </html> 

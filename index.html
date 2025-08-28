@@ -3,47 +3,131 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cadastro de Vendas</title>
+  <title>Sistema de Controle de Vendas</title>
   <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-  <h1>Cadastro de Vendas</h1>
-  <form id="vendaForm">
-    <label for="colaborador">Colaborador:</label>
-    <select id="colaborador" name="colaborador" required>
-      <option value="">Selecione</option>
-      <option>Daniel</option>
-      <option>Juan</option>
-      <option>Mateus Felipe</option>
-      <option>Fabio Felipe</option>
-      <option>Elder</option>
-      <option>Luan</option>
-      <option>Allysson</option>
-    </select>
-    <br><br>
-    <label for="produto">Produto:</label>
-    <select id="produto" name="produto" required>
-      <option value="">Selecione</option>
-      <option value="Oferta Principal Ticket 97">Oferta Principal Ticket 97</option>
-      <option value="Oferta Principal Ticket 67">Oferta Principal Ticket 67</option>
-      <option value="Oferta Principal Ticket 47">Oferta Principal Ticket 47</option>
-      <option value="LTV 1 = Atualizaçao Cadastral Ticket 47">LTV 1 = Atualizaçao Cadastral Ticket 47</option>
-      <option value="LTV 2 = Blindagem Ticket 53">LTV 2 = Blindagem Ticket 53</option>
-    </select>
-    <br><br>
-    <label for="quantidade">Quantidade de Vendas:</label>
-    <input type="number" id="quantidade" name="quantidade" min="1" max="15" value="1" required>
-    <br><br>
-    <label for="valor">Valor (R$):</label>
-    <input type="number" id="valor" name="valor" required readonly>
-    <br><br>
-    <label for="data">Data:</label>
-    <input type="date" id="data" name="data" required>
-    <br><br>
-    <button type="submit">Enviar</button>
-  </form>
-  <br>
-  <a href="relatorio.html">Ver Relatório</a>
+  <div class="container">
+    <h1>
+      <i class="fas fa-chart-line"></i>
+      Sistema de Controle de Vendas
+    </h1>
+
+    <!-- Navegação -->
+    <nav class="nav">
+      <a href="index.html" class="nav-link active">
+        <i class="fas fa-plus-circle"></i>
+        Cadastrar Venda
+      </a>
+      <a href="relatorio.html" class="nav-link">
+        <i class="fas fa-chart-bar"></i>
+        Relatórios
+      </a>
+    </nav>
+
+    <!-- Card do Formulário -->
+    <div class="card fade-in">
+      <div class="card-header">
+        <div class="card-icon">
+          <i class="fas fa-shopping-cart"></i>
+        </div>
+        <h2 class="card-title">Cadastrar Nova Venda</h2>
+      </div>
+
+      <form id="vendaForm">
+        <div class="form-group">
+          <label for="colaborador" class="form-label">
+            <i class="fas fa-user"></i>
+            Colaborador
+          </label>
+          <select id="colaborador" name="colaborador" class="form-select" required>
+            <option value="">Selecione um colaborador</option>
+            <option value="Daniel">Daniel</option>
+            <option value="Juan">Juan</option>
+            <option value="Kaio">Kaio</option>
+            <option value="Fabio Felipe">Fabio Felipe</option>
+            <option value="Rafael">Rafael</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="produto" class="form-label">
+            <i class="fas fa-box"></i>
+            Produto
+          </label>
+          <select id="produto" name="produto" class="form-select" required>
+            <option value="">Selecione um produto</option>
+            <option value="Oferta Principal Ticket 97">Oferta Principal Ticket 97</option>
+            <option value="Oferta Principal Ticket 67">Oferta Principal Ticket 67</option>
+            <option value="Oferta Principal Ticket 47">Oferta Principal Ticket 47</option>
+            <option value="LTV 1">LTV 1 = Ticket 47</option>
+            <option value="LTV 2">LTV 2 = Ticket 53</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="quantidade" class="form-label">
+            <i class="fas fa-hashtag"></i>
+            Quantidade de Vendas
+          </label>
+          <input type="number" id="quantidade" name="quantidade" class="form-input" min="1" max="15" value="1" required>
+          <small class="text-muted">Máximo de 15 vendas por vez</small>
+        </div>
+
+        <div class="form-group">
+          <label for="valor" class="form-label">
+            <i class="fas fa-dollar-sign"></i>
+            Valor Unitário (R$)
+          </label>
+          <input type="number" id="valor" name="valor" class="form-input" readonly>
+          <small class="text-muted">Valor calculado automaticamente</small>
+        </div>
+
+        <div class="form-group">
+          <label for="data" class="form-label">
+            <i class="fas fa-calendar"></i>
+            Data da Venda
+          </label>
+          <input type="date" id="data" name="data" class="form-input" required>
+        </div>
+
+        <div class="form-group mb-0">
+          <button type="submit" class="btn btn-primary w-full">
+            <i class="fas fa-paper-plane"></i>
+            Cadastrar Venda
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Card de Informações -->
+    <div class="card fade-in">
+      <div class="card-header">
+        <div class="card-icon">
+          <i class="fas fa-info-circle"></i>
+        </div>
+        <h2 class="card-title">Informações do Sistema</h2>
+      </div>
+      
+      <div class="flex flex-col gap-md">
+        <div class="flex items-center gap-md">
+          <i class="fas fa-check-circle" style="color: var(--success-color);"></i>
+          <span>Sistema integrado com Google Sheets para armazenamento seguro</span>
+        </div>
+        <div class="flex items-center gap-md">
+          <i class="fas fa-chart-pie" style="color: var(--info-color);"></i>
+          <span>Relatórios detalhados com rankings e calendário de vendas</span>
+        </div>
+        <div class="flex items-center gap-md">
+          <i class="fas fa-mobile-alt" style="color: var(--accent-color);"></i>
+          <span>Interface responsiva para uso em qualquer dispositivo</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script src="script.js"></script>
 </body>
 </html>
