@@ -27,6 +27,8 @@ Um sistema moderno e intuitivo para controle e acompanhamento de vendas, desenvo
 - ✅ Mensagens de sucesso/erro elegantes
 - ✅ Estados de carregamento
 - ✅ Animações suaves (fade-in, slide-in)
+- ✅ **Modo escuro** com toggle e persistência
+- ✅ **Dashboard em tempo real** com métricas animadas
 
 #### **Funcionalidades**
 - ✅ Validação de formulários aprimorada
@@ -35,6 +37,10 @@ Um sistema moderno e intuitivo para controle e acompanhamento de vendas, desenvo
 - ✅ Rankings com medalhas (ouro, prata, bronze)
 - ✅ Calendário com agrupamento por colaborador
 - ✅ Filtros em grid responsivo
+- ✅ **Métricas em tempo real** (vendas, colaboradores, receita)
+- ✅ **Atualização automática** a cada 30 segundos
+- ✅ **Animações de contagem** nos números
+- ✅ **Cálculo de variação** percentual
 
 #### **Responsividade**
 - ✅ Mobile-first design
@@ -62,13 +68,19 @@ Um sistema moderno e intuitivo para controle e acompanhamento de vendas, desenvo
 
 ### 1. **Cadastrar Venda**
 1. Acesse a página principal
-2. Preencha os dados do colaborador
-3. Selecione o produto (valor calculado automaticamente)
-4. Defina a quantidade (máximo 15)
-5. Confirme a data
-6. Clique em "Cadastrar Venda"
+2. Visualize o **dashboard em tempo real** com métricas
+3. Preencha os dados do colaborador
+4. Selecione o produto (valor calculado automaticamente)
+5. Defina a quantidade (máximo 15)
+6. Confirme a data
+7. Clique em "Cadastrar Venda"
 
-### 2. **Visualizar Relatórios**
+### 2. **Modo Escuro**
+1. Clique no botão de lua/sol no canto superior direito
+2. O tema será alterado instantaneamente
+3. Sua preferência será salva automaticamente
+
+### 3. **Visualizar Relatórios**
 1. Acesse a página de relatórios
 2. Use os filtros para refinar a busca
 3. Visualize rankings e calendário
@@ -100,6 +112,8 @@ controle-vendas-main/
 - **Formulários**: Validação visual
 - **Tabelas**: Responsivas com scroll
 - **Rankings**: Com medalhas e posições
+- **Dashboard**: Métricas em tempo real com animações
+- **Toggle**: Botão de alternância de tema
 
 ## 📊 Funcionalidades Técnicas
 
@@ -114,6 +128,8 @@ controle-vendas-main/
 - Debounce em filtros
 - Otimização de re-renders
 - Cache de dados
+- Atualização automática a cada 30 segundos
+- Animações otimizadas
 
 ### **Acessibilidade**
 - Labels semânticos
@@ -123,11 +139,11 @@ controle-vendas-main/
 
 ## 🔄 Próximas Melhorias
 
-- [ ] Modo escuro
+- [x] ✅ **Modo escuro** - Implementado com toggle e persistência
+- [x] ✅ **Dashboard em tempo real** - Implementado com métricas animadas
 - [ ] Gráficos interativos
 - [ ] Exportação de relatórios (PDF/Excel)
 - [ ] Notificações push
-- [ ] Dashboard em tempo real
 - [ ] Autenticação de usuários
 - [ ] Backup automático
 

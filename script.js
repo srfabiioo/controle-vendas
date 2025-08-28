@@ -34,6 +34,137 @@ function setLoading(element, loading = true) {
   }
 }
 
+// === MODO ESCURO ===
+function initThemeToggle() {
+  const themeToggle = document.getElementById('themeToggle');
+  const html = document.documentElement;
+  
+  // Carregar tema salvo
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  html.setAttribute('data-theme', savedTheme);
+  updateThemeIcon(savedTheme);
+  
+  themeToggle.addEventListener('click', () => {
+    const currentTheme = html.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    
+    html.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+    updateThemeIcon(newTheme);
+    
+    // Animação suave
+    html.style.transition = 'all 0.3s ease-in-out';
+    setTimeout(() => {
+      html.style.transition = '';
+    }, 300);
+  });
+}
+
+function updateThemeIcon(theme) {
+  const themeToggle = document.getElementById('themeToggle');
+  const icon = themeToggle.querySelector('i');
+  
+  if (theme === 'dark') {
+    icon.className = 'fas fa-sun';
+    themeToggle.title = 'Alternar modo claro';
+  } else {
+    icon.className = 'fas fa-moon';
+    themeToggle.title = 'Alternar modo escuro';
+  }
+}
+
+// === DASHBOARD EM TEMPO REAL ===
+let dashboardData = {
+  totalVendas: 0,
+  totalColaboradores: 0,
+  receitaTotal: 0,
+  vendasHoje: 0,
+  vendasAnterior: 0,
+  colaboradoresAnterior: 0,
+  receitaAnterior: 0,
+  vendasHojeAnterior: 0
+};
+
+function updateDashboard(vendas) {
+  const hoje = new Date().toISOString().slice(0, 10);
+  
+  // Calcular métricas
+  const totalVendas = vendas.length;
+  const colaboradores = new Set(vendas.map(v => v.colaborador)).size;
+  const receitaTotal = vendas.reduce((total, v) => total + (parseInt(v.valor) || 0), 0);
+  const vendasHoje = vendas.filter(v => v.data === hoje).length;
+  
+  // Salvar dados anteriores para cálculo de mudança
+  const vendasAnterior = dashboardData.totalVendas;
+  const colaboradoresAnterior = dashboardData.totalColaboradores;
+  const receitaAnterior = dashboardData.receitaTotal;
+  const vendasHojeAnterior = dashboardData.vendasHoje;
+  
+  // Atualizar dados
+  dashboardData = {
+    totalVendas,
+    totalColaboradores: colaboradores,
+    receitaTotal,
+    vendasHoje,
+    vendasAnterior,
+    colaboradoresAnterior,
+    receitaAnterior,
+    vendasHojeAnterior
+  };
+  
+  // Atualizar elementos do DOM
+  updateDashboardElement('totalVendas', totalVendas, vendasAnterior);
+  updateDashboardElement('totalColaboradores', colaboradores, colaboradoresAnterior);
+  updateDashboardElement('receitaTotal', `R$ ${receitaTotal.toLocaleString('pt-BR')}`, receitaAnterior);
+  updateDashboardElement('vendasHoje', vendasHoje, vendasHojeAnterior);
+}
+
+function updateDashboardElement(elementId, currentValue, previousValue) {
+  const element = document.getElementById(elementId);
+  const changeElement = document.getElementById(elementId.replace('total', '').replace('receita', 'receita').replace('vendasHoje', 'hoje') + 'Change');
+  
+  if (element) {
+    // Animação de contagem
+    animateNumber(element, currentValue);
+  }
+  
+  if (changeElement && previousValue !== undefined) {
+    const change = currentValue - previousValue;
+    const percentage = previousValue > 0 ? Math.round((change / previousValue) * 100) : 0;
+    
+    if (change > 0) {
+      changeElement.innerHTML = `<i class="fas fa-arrow-up"></i> +${percentage}%`;
+      changeElement.className = 'dashboard-change positive';
+    } else if (change < 0) {
+      changeElement.innerHTML = `<i class="fas fa-arrow-down"></i> ${percentage}%`;
+      changeElement.className = 'dashboard-change negative';
+    } else {
+      changeElement.innerHTML = `<i class="fas fa-minus"></i> 0%`;
+      changeElement.className = 'dashboard-change';
+    }
+  }
+}
+
+function animateNumber(element, targetValue) {
+  const currentValue = parseInt(element.textContent.replace(/[^\d]/g, '')) || 0;
+  const increment = (targetValue - currentValue) / 20;
+  let current = currentValue;
+  
+  const timer = setInterval(() => {
+    current += increment;
+    if ((increment > 0 && current >= targetValue) || (increment < 0 && current <= targetValue)) {
+      current = targetValue;
+      clearInterval(timer);
+    }
+    
+    if (element.id === 'receitaTotal') {
+      element.textContent = `R$ ${Math.floor(current).toLocaleString('pt-BR')}`;
+    } else {
+      element.textContent = Math.floor(current);
+    }
+  }, 50);
+}
+
 // === FORMULÁRIO DE CADASTRO ===
 if (document.getElementById('vendaForm')) {
   const produtoValores = {
@@ -109,6 +240,11 @@ if (document.getElementById('vendaForm')) {
         document.getElementById('vendaForm').reset();
         document.getElementById('quantidade').value = 1;
         document.getElementById('data').value = new Date().toISOString().slice(0, 10);
+        
+        // Atualizar dashboard
+        if (typeof carregarVendas === 'function') {
+          carregarVendas();
+        }
       } else {
         showMessage(`⚠️ Erro ao cadastrar algumas vendas. ${successCount} de ${totalVendas} vendas foram cadastradas.`, 'error');
       }
@@ -214,6 +350,12 @@ if (document.getElementById('tabelaVendas')) {
     try {
       const resp = await fetch(GOOGLE_SCRIPT_URL);
       vendas = await resp.json();
+      
+      // Atualizar dashboard se estiver na página principal
+      if (document.getElementById('totalVendas')) {
+        updateDashboard(vendas);
+      }
+      
       filtrarVendas();
     } catch (err) {
       showMessage('❌ Erro ao carregar dados. Verifique sua conexão.', 'error');
@@ -376,4 +518,19 @@ if (document.getElementById('tabelaVendas')) {
 
   // Carregar dados ao iniciar
   carregarVendas();
-} 
+}
+
+// === INICIALIZAÇÃO ===
+document.addEventListener('DOMContentLoaded', function() {
+  // Inicializar modo escuro
+  initThemeToggle();
+  
+  // Atualizar dashboard a cada 30 segundos se estiver na página principal
+  if (document.getElementById('totalVendas')) {
+    setInterval(() => {
+      if (typeof carregarVendas === 'function') {
+        carregarVendas();
+      }
+    }, 30000); // 30 segundos
+  }
+}); 

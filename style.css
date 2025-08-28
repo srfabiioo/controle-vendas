@@ -51,6 +51,40 @@
   --transition-slow: 0.5s ease-in-out;
 }
 
+/* === MODO ESCURO === */
+[data-theme="dark"] {
+  /* Cores principais */
+  --primary-color: #3b82f6;
+  --primary-dark: #2563eb;
+  --primary-light: #60a5fa;
+  --secondary-color: #94a3b8;
+  --accent-color: #fbbf24;
+  
+  /* Cores de fundo */
+  --bg-primary: #1e293b;
+  --bg-secondary: #334155;
+  --bg-tertiary: #475569;
+  --bg-gradient: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  
+  /* Cores de texto */
+  --text-primary: #f1f5f9;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+  --text-white: #ffffff;
+  
+  /* Cores de status */
+  --success-color: #10b981;
+  --warning-color: #f59e0b;
+  --error-color: #ef4444;
+  --info-color: #3b82f6;
+  
+  /* Sombras */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.4);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.4);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.4), 0 8px 10px -6px rgb(0 0 0 / 0.4);
+}
+
 /* === RESET E BASE === */
 * {
   margin: 0;
@@ -68,6 +102,7 @@ body {
   flex-direction: column;
   align-items: center;
   padding: var(--spacing-lg);
+  transition: all var(--transition-normal);
 }
 
 /* === TIPOGRAFIA === */
@@ -452,6 +487,103 @@ h3 {
   font-weight: 600;
 }
 
+/* === DASHBOARD === */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
+}
+
+.dashboard-card {
+  background: var(--bg-primary);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-lg);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--bg-tertiary);
+  text-align: center;
+  transition: all var(--transition-normal);
+}
+
+.dashboard-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+.dashboard-icon {
+  width: 60px;
+  height: 60px;
+  background: var(--primary-color);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto var(--spacing-md);
+  color: var(--text-white);
+  font-size: 1.5rem;
+}
+
+.dashboard-number {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.dashboard-label {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.dashboard-change {
+  font-size: 0.875rem;
+  margin-top: var(--spacing-sm);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--border-radius-sm);
+  display: inline-block;
+}
+
+.dashboard-change.positive {
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--success-color);
+}
+
+.dashboard-change.negative {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--error-color);
+}
+
+/* === TOGGLE MODO ESCURO === */
+.theme-toggle {
+  position: fixed;
+  top: var(--spacing-lg);
+  right: var(--spacing-lg);
+  background: var(--bg-primary);
+  border: 2px solid var(--bg-tertiary);
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  box-shadow: var(--shadow-md);
+  z-index: 1000;
+}
+
+.theme-toggle:hover {
+  transform: scale(1.1);
+  box-shadow: var(--shadow-lg);
+}
+
+.theme-toggle i {
+  font-size: 1.25rem;
+  color: var(--text-primary);
+  transition: all var(--transition-fast);
+}
+
 /* === RESPONSIVIDADE === */
 @media (max-width: 768px) {
   body {
@@ -474,6 +606,10 @@ h3 {
     grid-template-columns: 1fr;
   }
   
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+  
   .nav {
     flex-direction: column;
     width: 100%;
@@ -492,6 +628,13 @@ h3 {
   .calendar-sale {
     font-size: 0.7rem;
     padding: 2px;
+  }
+  
+  .theme-toggle {
+    top: var(--spacing-sm);
+    right: var(--spacing-sm);
+    width: 45px;
+    height: 45px;
   }
 }
 
@@ -514,6 +657,10 @@ h3 {
     min-width: 60px;
     min-height: 60px;
     font-size: 0.7rem;
+  }
+  
+  .dashboard-number {
+    font-size: 2rem;
   }
 }
 
@@ -540,12 +687,25 @@ h3 {
   }
 }
 
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
 .fade-in {
   animation: fadeIn var(--transition-normal) ease-out;
 }
 
 .slide-in {
   animation: slideIn var(--transition-normal) ease-out;
+}
+
+.pulse {
+  animation: pulse 2s infinite;
 }
 
 /* === ESTADOS === */

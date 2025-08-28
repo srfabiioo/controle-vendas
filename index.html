@@ -9,6 +9,11 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
+  <!-- Toggle Modo Escuro -->
+  <button class="theme-toggle" id="themeToggle" title="Alternar modo escuro">
+    <i class="fas fa-moon"></i>
+  </button>
+
   <div class="container">
     <h1>
       <i class="fas fa-chart-line"></i>
@@ -26,6 +31,53 @@
         Relatórios
       </a>
     </nav>
+
+    <!-- Dashboard em Tempo Real -->
+    <div class="dashboard-grid fade-in">
+      <div class="dashboard-card">
+        <div class="dashboard-icon">
+          <i class="fas fa-shopping-cart"></i>
+        </div>
+        <div class="dashboard-number" id="totalVendas">0</div>
+        <div class="dashboard-label">Total de Vendas</div>
+        <div class="dashboard-change positive" id="vendasChange">
+          <i class="fas fa-arrow-up"></i> +0%
+        </div>
+      </div>
+
+      <div class="dashboard-card">
+        <div class="dashboard-icon">
+          <i class="fas fa-users"></i>
+        </div>
+        <div class="dashboard-number" id="totalColaboradores">0</div>
+        <div class="dashboard-label">Colaboradores Ativos</div>
+        <div class="dashboard-change positive" id="colaboradoresChange">
+          <i class="fas fa-arrow-up"></i> +0%
+        </div>
+      </div>
+
+      <div class="dashboard-card">
+        <div class="dashboard-icon">
+          <i class="fas fa-dollar-sign"></i>
+        </div>
+        <div class="dashboard-number" id="receitaTotal">R$ 0</div>
+        <div class="dashboard-label">Receita Total</div>
+        <div class="dashboard-change positive" id="receitaChange">
+          <i class="fas fa-arrow-up"></i> +0%
+        </div>
+      </div>
+
+      <div class="dashboard-card">
+        <div class="dashboard-icon">
+          <i class="fas fa-calendar-day"></i>
+        </div>
+        <div class="dashboard-number" id="vendasHoje">0</div>
+        <div class="dashboard-label">Vendas Hoje</div>
+        <div class="dashboard-change positive" id="hojeChange">
+          <i class="fas fa-arrow-up"></i> +0%
+        </div>
+      </div>
+    </div>
 
     <!-- Card do Formulário -->
     <div class="card fade-in">
@@ -123,6 +175,10 @@
         <div class="flex items-center gap-md">
           <i class="fas fa-mobile-alt" style="color: var(--accent-color);"></i>
           <span>Interface responsiva para uso em qualquer dispositivo</span>
+        </div>
+        <div class="flex items-center gap-md">
+          <i class="fas fa-moon" style="color: var(--primary-color);"></i>
+          <span>Modo escuro disponível para melhor experiência visual</span>
         </div>
       </div>
     </div>
